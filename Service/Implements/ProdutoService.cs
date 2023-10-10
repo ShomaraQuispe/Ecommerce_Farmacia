@@ -24,6 +24,7 @@ namespace Ecommerce_Farmacia.Services.Implements
             try
             {
                 var Produto = await _context.Produtos
+                    .Include(p => p.Categoria)
                     .FirstAsync(i => i.Id == id);
                 return Produto;
             }
@@ -37,6 +38,7 @@ namespace Ecommerce_Farmacia.Services.Implements
         public async Task<IEnumerable<Produto>> GetByNome(string nome)
         {
             var Produto = await _context.Produtos
+               .Include(p => p.Categoria)
                .Where(p => p.Nome.Contains(nome))
                .ToListAsync();
             return Produto;
@@ -49,7 +51,17 @@ namespace Ecommerce_Farmacia.Services.Implements
             if (produtoUpdate is null)
             {
                 return null;
-            }      
+            }
+
+            if (produto.Categoria is not null)
+            {
+                var BuscaCategoria = await _context.Categorias.FindAsync(produto.Categoria.Id);
+
+                if (BuscaCategoria is null)
+                    return null;
+
+                produto.Categoria = BuscaCategoria;
+            }
 
             _context.Entry(produtoUpdate).State = EntityState.Detached;
             _context.Entry(produto).State = EntityState.Modified;
@@ -60,6 +72,15 @@ namespace Ecommerce_Farmacia.Services.Implements
 
         public async Task<Produto?> Create(Produto produto)
         {
+            if (produto.Categoria is not null)
+            {
+                var BuscaCategoria = await _context.Categorias.FindAsync(produto.Categoria.Id);
+
+                if (BuscaCategoria is null)
+                    return null;
+
+                produto.Categoria = BuscaCategoria;
+            }
             await _context.Produtos.AddAsync(produto);
             await _context.SaveChangesAsync();
 

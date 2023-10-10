@@ -13,7 +13,16 @@ namespace Ecommerce_Farmacia.Data
         {
             modelBuilder.Entity<Produto>().ToTable("tb_produtos");
 
+            modelBuilder.Entity<Categoria>().ToTable("tb_categorias");
+
+            modelBuilder.Entity<Produto>()
+         .HasOne(p => p.Categoria)
+         .WithMany(t => t.Produto)
+         .HasForeignKey("CategoriaId")
+         .OnDelete(DeleteBehavior.Cascade);
+
         }
         public DbSet<Produto> Produtos { get; set; } = null!;
+        public DbSet<Categoria> Categorias { get; set; } = null!;
     }
 }

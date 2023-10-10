@@ -1,5 +1,10 @@
 
 using Ecommerce_Farmacia.Data;
+using Ecommerce_Farmacia.Model;
+using Ecommerce_Farmacia.Services;
+using Ecommerce_Farmacia.Services.Implements;
+using Ecommerce_Farmacia.Validator;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce_Farmacia
@@ -22,6 +27,11 @@ namespace Ecommerce_Farmacia
                 options.UseSqlServer(connectionString)
             );
 
+            // Validação das Entidades
+            builder.Services.AddTransient<IValidator<Produto>, ProdutoValidator>();
+
+            // Registrar as Classes e Interfaces Service
+            builder.Services.AddScoped<IProdutoService, ProdutoService>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
